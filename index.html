@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hommage Coutumier - LONTSI Jean & TCHINDA André</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/maglisto" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- En-tête -->
+    <header>
+       <img src="images/entete.svg"></img> 
+    </header>
+
+    <div class="container">
+        <!-- Hommage -->
+        <section id="hommage">
+            <h2>Mot de la Famille</h2>
+            <p style="text-align: justify; line-height: 1.8;">
+               <b>- La grande famille TAPIYOTA à Batcheutio;<br>
+                - TANE Rostant</b> à Yaoundé;<br>
+                <b>- Monsieur SELABOUE Nadège</b> à Bafoussam;<br>
+                - et Madame <b>MAFFOPA Madeleine à Batcheutio;</b><br>
+                sont heureux de vous convier à la grande cérémonie d'hommage coutumier dédiée à la mémoire de leurs fils, pères, beaux pères, et oncles :
+            </p>
+            <h5>LONTSI Jean & TCHINDA André</h5>
+        </section>
+
+        <!-- Programme -->
+        <section id="programme">
+            <h2>Programme des Festivités</h2>
+            
+            <div class="program-day">
+                <h3>Mercredi 11 février 2026 - Journée d'accueil</h3>
+                <ul>
+                    <li>Arrivée et installation des délégations</li>
+                </ul>
+            </div>
+
+            <div class="program-day">
+                <h3>Jeudi 12 février 2026</h3>
+                <ul>
+                    <li>Cérémonie de réception des Beaux et Nkié (pratiques coutumières)</li>
+                </ul>
+            </div>
+
+            <div class="program-day">
+                <h3>Vendredi 13 février 2026</h3>
+                <ul>
+                    <li>Grand rassemblement et office traditionnel dans la Cour des Aïeux</li>
+                    <li>Hommages aux illustres disparus</li>
+                    <li>Spectacles et animations culturelles</li>
+                    <li>Grande nuit de danse Kana</li>
+                </ul>
+            </div>
+
+            <div class="program-day">
+                <h3>Samedi 14 février 2026 - Clôture en apothéose</h3>
+                <ul>
+                    <li>10h00 : Exécution solennelle du Nkeya et du Nzing (danses patrimoniales)</li>
+                    <li>13h00 : Grandes processions et danses traditionnelles</li>
+                    <li>14h00 : Réception (Grand festin)</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="#" onclick="downloadProgramme(); return false;" class="btn btn-primary">Télécharger le Programme de l'Evenement</a>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <section id="menu">
+            <h2>Menu du Festin</h2>
+            <p style="margin-bottom: 20px;">Sélectionnez vos préférences (cliquez pour sélectionner) :</p>
+            <div class="menu-grid">
+                </div>
+        </section>
+
+        <!-- Inscription -->
+        <section id="inscription">
+            <h2>Confirmation</h2>
+            
+            <div class="deadline-notice">
+                ⚠️ Date limite d'inscription : 7 février 2026
+            </div>
+
+            <form id="registrationForm" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="nom">Nom complet *</label>
+                    <input type="text" id="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephone">Numéro de téléphone *</label>
+                    <input type="tel" id="telephone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nbPersonnes">Nombre de personnes</label>
+                    <input type="number" id="nbPersonnes" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="arrivee">Date et heure d'arrivée prévue</label>
+                    <input type="datetime-local" id="arrivee">
+                </div>
+
+                <div class="form-group">
+                    <label for="depart">Date et heure de départ prévue</label>
+                    <input type="datetime-local" id="depart">
+                </div>
+
+                <div class="form-group">
+                    <label for="menu-choix">Choix du menu</label>
+                    <input type="text" id="menu-choix" readonly placeholder="Sélectionnez dans la section menu ci-dessus">
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message / Besoins particuliers</label>
+                    <textarea id="message" rows="4"></textarea>
+                </div>
+
+                <div class="confirmation-message" id="confirmationMsg">
+                    ✓ Votre inscription a été enregistrée avec succès. Merci !
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">Confirmer mon inscription</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Localisation -->
+        <section id="localisation">
+            <h2>Localisation</h2>
+            <p><strong>Lieu :</strong> Batcheutio, Village du Groupement Batcham (Bamboutos)</p>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127047.91447479658!2d10.236872!3d5.456556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMjcnMjMuNiJOIDEwwrAxNCcxMi43IkU!5e0!3m2!1sfr!2scm!4v1234567890" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </section>
+
+        <!-- Dons -->
+        <section id="dons">
+            <h2>Contribution et Dons</h2>
+            <p style="margin-bottom: 30px; text-align: center;">
+                Votre contribution volontaire pour honorer dignement la mémoire de nos défunts est la bienvenue.
+                Vous pouvez envoyer vos dons directement aux numéros ci-dessous :
+            </p>
+
+            <div class="contact-grid">
+                <div class="contact-card donation-info orange">
+                    <h4>Orange Money (OM)</h4>
+                    <p><strong>+237 6 92 03 35 34</strong></p> <small>Nom du bénéficiaire : METCHOUANG Dalila</small>
+                </div>
+                <div class="contact-card donation-info mtn">
+                    <h4>MTN Mobile Money (MoMo)</h4>
+                    <p><strong>+237 6 77 43 10 13</strong></p> <small>Nom du bénéficiaire : TANE Rostant</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacts -->
+        <section id="contacts">
+            <h2>Contacts</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h4>TANE Rostant</h4>
+                    <a href="tel:+237697183399" class="btn">📞 Appeler</a>
+                    <a href="https://wa.me/237697183399" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                </div>
+                <div class="contact-card">
+                    <h4>METCHOUANG Dalila</h4>
+                    <a href="tel:+237677431013" class="btn">📞 Appeler</a>
+                    <a href="https://wa.me/237677431013" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Condoléances -->
+        <section id="condoleances">
+            <h2>Livre de Condoléances</h2>
+            
+            <form id="condoleanceForm" onsubmit="addCondolence(event)">
+                <div class="form-group">
+                    <label for="condoleance-nom">Votre nom</label>
+                    <input type="text" id="condoleance-nom" required>
+                </div>
+                <div class="form-group">
+                    <label for="condoleance-message">Votre message</label>
+                    <textarea id="condoleance-message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Déposer une condoléance</button>
+            </form>
+
+            <div id="condoleancesList" style="margin-top: 30px;">
+                <div class="condolence">
+                    <div class="condolence-author">Famille NKEMBE</div>
+                    <p>Nos pensées et prières accompagnent vos familles dans cette épreuve. Que leurs âmes reposent en paix.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>En mémoire de LONTSI Jean et TCHINDA André</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Que leurs âmes reposent en paix 🕊</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
