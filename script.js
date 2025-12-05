@@ -5,7 +5,7 @@ let donations = [];
 // Variable pour stocker la dernière inscription de l'utilisateur sur ce navigateur
 let lastUserRegistration = null;
 // Variable globale pour l'URL de votre Apps Script (PLACEHOLDER)
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxiXLG6nk8e034VnLNlwMNaflOcHZfWiLnDSzuXrHxpbCcsY0w6K7VJerivCIA4tcHd/exec'; 
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbz3whgdTTkipblEW8tndSCBzSTdWdzTKGPMNxG3ovl_w_Sw7EpnivgCsqxW1SQgydhr/exec'; 
 
 function sendDataToGoogleSheet(data, actionType) {
     const sheetData = {
@@ -40,7 +40,6 @@ function sendDataToGoogleSheet(data, actionType) {
 window.addEventListener('DOMContentLoaded', function() {
     loadData();
     loadCondolencesFromSheet(); // Charger depuis Sheets uniquement
-    displayDonations();
     checkExistingRegistration();
     loadMenuFromSheet();
 });
@@ -299,81 +298,51 @@ function displayDefaultCondolence() {
     `;
 }
 
+// NOUVELLE FONCTION handleDonation dans script.js (à partir de la ligne ~298)
 function handleDonation(event) {
     event.preventDefault();
-    
+
     const nom = document.getElementById('don-nom').value;
     const telephone = document.getElementById('don-telephone').value;
     const montant = document.getElementById('don-montant').value;
-    const operateur = document.getElementById('don-operateur').value;
+    // NOTE : L'opérateur n'est pas utilisé dans le formulaire index.html, 
+    // donc nous l'omettons ici. Si vous l'ajoutez, vous devrez le récupérer.
     const message = document.getElementById('don-message').value;
     
-    if (!nom || !telephone || !montant || !operateur) {
+    // Le formulaire index.html ne contient pas d'input pour l'opérateur,
+    // mais si on se fie aux champs requis, on s'en tient à Nom, Tél, Montant.
+    if (!nom || !telephone || !montant) {
         alert('Veuillez remplir tous les champs obligatoires');
         return;
     }
     
-    // Générer le code USSD selon l'opérateur
-    let ussdCode = '';
-    const cleanPhone = telephone.replace(/\D/g, '');
-    
-    if (operateur === 'orange') {
-        // Orange Money: #150*50*numéro*montant#
-        ussdCode = `#150*1*${cleanPhone}*${montant}#`;
-    } else if (operateur === 'mtn') {
-        // MTN Mobile Money: *126#
-        ussdCode = `*126#`;
-    }
-    
-    // Afficher les instructions USSD
-    document.getElementById('ussdCode').textContent = ussdCode;
-    document.getElementById('ussdInstruction').style.display = 'block';
-    
-    // Sauvegarder le don
-    const donation = {
-        id: Date.now(),
-        nom,
-        telephone,
-        montant,
-        operateur,
-        message,
-        date: new Date().toISOString(),
-        status: 'pending'
-    };
-    
-    donations.push(donation);
-    saveData();
-    
-    // Afficher la liste des dons
-    displayDonations();
-    
-    // Réinitialiser le formulaire après 5 secondes
-    setTimeout(() => {
-        document.getElementById('donForm').reset();
-        document.getElementById('ussdInstruction').style.display = 'none';
-    }, 5000);
-}
+    // Logique d'envoi des données au backend (Google Sheets)
+    const formData = new URLSearchParams({
+        action_type: 'donation', // C'est la clé que l'Apps Script recherche
+        nom: nom,
+        telephone: telephone,
+        montant: montant, // Envoyons le montant
+        message: message
+    });
 
-function displayDonations() {
-    const container = document.getElementById('donsListContainer');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (donations.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666;">Aucune contribution pour le moment.</p>';
-        return;
-    }
-    
-    donations.forEach(don => {
-        const donDiv = document.createElement('div');
-        donDiv.className = 'condolence';
-        donDiv.innerHTML = `
-            <div class="condolence-author">${don.nom}</div>
-            <p><strong>${don.montant} FCFA</strong> - ${don.operateur === 'orange' ? 'Orange Money' : 'MTN Mobile Money'}</p>
-            ${don.message ? `<p style="margin-top: 8px; font-style: italic;">"${don.message}"</p>` : ''}
-        `;
-        container.appendChild(donDiv);
+    fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+    })
+    .then(() => {
+        // Afficher un message de confirmation
+        alert('✓ Votre don a été enregistré dans le registre (N\'oubliez pas de l\'effectuer via Mobile Money)');
+        
+        // Réinitialiser le formulaire
+        document.getElementById('donForm').reset();
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'envoi du don : ' + error.message);
     });
 }
 
