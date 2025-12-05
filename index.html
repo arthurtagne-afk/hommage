@@ -84,7 +84,7 @@
             <h2>Confirmation</h2>
             
             <div class="deadline-notice">
-                ⚠️ Date de confirmation de participation : 7 février 2026
+                ⚠️ Date limite d'inscription : 7 février 2026
             </div>
 
             <form id="registrationForm" onsubmit="handleSubmit(event)">
@@ -145,9 +145,10 @@
         <!-- Dons -->
         <section id="dons">
             <h2>Contribution et Dons</h2>
-            <p style="margin-bottom: 30px; text-align: center;">
-                Votre contribution volontaire pour honorer dignement la mémoire de nos défunts est la bienvenue.
-                Vous pouvez envoyer vos dons directement aux numéros ci-dessous :
+            <p style="margin-bottom: 30px;">
+                Votre contribution volontaire pour honorer dignement la mémoire de nos défunts est la bienvenue. <br>
+                Vous pouvez envoyer vos dons directement aux numéros ci-dessous. <br>
+                N'oubliez pas de remplir le formulaire après votre paiement. <br>
             </p>
 
             <div class="contact-grid">
@@ -160,6 +161,32 @@
                     <p><strong>+237 6 77 43 10 13</strong></p> <small>Nom du bénéficiaire : TANE Rostant</small>
                 </div>
             </div>
+
+            <form id="donForm" onsubmit="handleDonation(event)">
+                <div class="form-group">
+                    <label for="don-nom">Votre nom *</label>
+                    <input type="text" id="don-nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="don-telephone">Numéro de téléphone *</label>
+                    <input type="tel" id="don-telephone" placeholder="237XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="don-montant">Montant (FCFA) *</label>
+                    <input type="number" id="don-montant" min="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="don-message">Message (optionnel)</label>
+                    <textarea id="don-message" rows="3"></textarea>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-primary">Renseigner votre don</button>
+                </div>
+            </form>
         </section>
 
         <!-- Contacts -->
@@ -212,6 +239,4 @@
 
     <script src="script.js"></script>
 </body>
-
 </html>
-
