@@ -266,12 +266,27 @@ input:focus, select:focus, textarea:focus {
     border-radius: 8px;
     overflow: hidden;
     margin-top: 20px;
+    border: 3px solid #114E9B; /* Utiliser la couleur principale pour l'encadrer */
 }
 
 .map-container iframe {
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* Style spécifique pour la carte de l'hôtel */
+.map-container.hotel-map {
+    height: 300px; /* Rendre la carte de l'hôtel un peu moins haute */
+}
+
+/* Style pour le sous-titre de l'hôtel */
+#reservation h3 {
+    /* Réutiliser les styles de h5 pour une taille intermédiaire, ou le styliser */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3em;
+    color: #444;
+    font-weight: 500;
 }
 
 /* Contacts */
@@ -384,5 +399,4 @@ footer {
     h2 { font-size: 1.5em; }
     section { padding: 25px; }
     .deceased-names { font-size: 1.2em; }
-
 }
