@@ -5,7 +5,8 @@ let donations = [];
 // Variable pour stocker la dernière inscription de l'utilisateur sur ce navigateur
 let lastUserRegistration = null;
 // Variable globale pour l'URL de votre Apps Script (PLACEHOLDER)
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbz3whgdTTkipblEW8tndSCBzSTdWdzTKGPMNxG3ovl_w_Sw7EpnivgCsqxW1SQgydhr/exec'; 
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbz3whgdTTkipblEW8tndSCBzSTdWdzTKGPMNxG3ovl_w_Sw7EpnivgCsqxW1SQgydhr/exec';
+let carouselInterval;
 
 function sendDataToGoogleSheet(data, actionType) {
     const sheetData = {
@@ -39,6 +40,7 @@ function sendDataToGoogleSheet(data, actionType) {
 // Charger les données au démarrage
 window.addEventListener('DOMContentLoaded', function() {
     loadData();
+    loadCarouselInfos();
     loadCondolencesFromSheet(); // Charger depuis Sheets uniquement
     checkExistingRegistration();
     loadMenuFromSheet();
@@ -63,6 +65,48 @@ function saveData() {
     } else {
         localStorage.removeItem('last_user_registration');
     }
+}
+
+async function loadCarouselInfos() {
+    try {
+        if (typeof anecdotes === 'undefined') {
+            throw new Error('Anecdotes non chargées');
+        }
+        
+        // Calculer le compte à rebours
+        const eventDate = new Date('2026-02-11T00:00:00');
+        const now = new Date();
+        const diff = eventDate - now;
+        
+        const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+        const countdownMessage = `⏰ Il reste ${jours} jours et ${heures} heures avant le début de l'événement`;
+        
+        // Mélanger les anecdotes
+        const shuffledAnecdotes = [...anecdotes].sort(() => Math.random() - 0.5);
+        
+        // Afficher le countdown en premier
+        displayCarouselItem(countdownMessage, 0);
+        
+        // Démarrer le carousel avec les anecdotes
+        let currentIndex = 0;
+        carouselInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % shuffledAnecdotes.length;
+            const anecdote = shuffledAnecdotes[currentIndex];
+            const message = `${anecdote.auteur} : "${anecdote.anecdote}"`;
+            displayCarouselItem(message, currentIndex + 1);
+        }, 10000); // 30 secondes
+        
+    } catch (error) {
+        console.error('Erreur chargement carousel:', error);
+        displayCarouselItem('Informations bientôt disponibles', 0);
+    }
+}
+
+function displayCarouselItem(message, index) {
+    const track = document.getElementById('carouselTrack');
+    track.innerHTML = `<div class="carousel-item" key="${index}">${message}</div>`;
 }
 
 /**
