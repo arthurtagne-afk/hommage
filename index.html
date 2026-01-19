@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,10 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- En-tête -->
     <header>
-       <img src="images/header.jpg"></img> 
+        <img src="images/header.jpg"></img>
     </header>
 
     <div class="container">
@@ -20,13 +22,55 @@
         <section id="hommage">
             <h2>Mot de la Famille</h2>
             <p style="text-align: justify; line-height: 1.8;">
-               <b>- La grande famille TAPIYOTA à Batcheutio;<br>
-                - TANE Rostant</b> à Yaoundé;<br>
+                <b>- La grande famille TAPIYOTA à Batcheutio;<br>
+                    - TANE Rostant</b> à Yaoundé;<br>
                 <b>- Monsieur SELABOUE Nadège</b> à Bafoussam;<br>
                 - et Madame <b>MAFFOPA Madeleine à Batcheutio;</b><br>
-                sont heureux de vous convier à la grande cérémonie d'hommage coutumier dédiée à la mémoire de leurs fils, pères, beaux pères, et oncles :
+                sont heureux de vous convier à la grande cérémonie d'hommage coutumier dédiée à la mémoire de leurs
+                fils, pères, beaux pères, et oncles :
             </p>
             <h5>LONTSI Jean & TCHINDA André</h5>
+        </section>
+
+        <!-- Page de Check-in (cachée par défaut) -->
+        <section id="checkin" style="display: none;">
+            <h2>Enregistrement d'arrivée</h2>
+
+            <div id="checkin-auto" style="display: none;">
+                <p>Bonjour <strong id="checkin-nom"></strong> !</p>
+                <p>Confirmez-vous votre arrivée maintenant ?</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button onclick="confirmCheckin()" class="btn btn-primary">Confirmer mon arrivée</button>
+                    <button onclick="showCheckinForm()" class="btn">Modifier mes informations</button>
+                </div>
+            </div>
+
+            <div id="checkin-form" style="display: none;">
+                <form onsubmit="handleCheckinSubmit(event)">
+                    <div class="form-group">
+                        <label for="checkin-nom-input">Nom complet *</label>
+                        <input type="text" id="checkin-nom-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checkin-telephone-input">Numéro de téléphone *</label>
+                        <input type="tel" id="checkin-telephone-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checkin-personnes">Nombre de personnes</label>
+                        <input type="number" id="checkin-personnes" min="1" value="1">
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn btn-primary">Enregistrer mon arrivée</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="confirmation-message" id="checkinConfirmationMsg">
+                ✓ Votre arrivée a été enregistrée avec succès !
+            </div>
         </section>
 
         <!-- Carousel d'infos -->
@@ -39,7 +83,7 @@
         <!-- Programme -->
         <section id="programme">
             <h2>Programme des Festivités</h2>
-            
+
             <div class="program-day">
                 <h3>Mercredi 11 février 2026 - Journée d'accueil</h3>
                 <ul>
@@ -74,7 +118,8 @@
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-                <a href="#" onclick="downloadProgramme(); return false;" class="btn btn-primary">Télécharger le Programme de l'Evenement</a>
+                <a href="#" onclick="downloadProgramme(); return false;" class="btn btn-primary">Télécharger le
+                    Programme de l'Evenement</a>
             </div>
         </section>
 
@@ -83,13 +128,13 @@
             <h2>Menu du Festin</h2>
             <p style="margin-bottom: 20px;">Sélectionnez vos préférences (cliquez pour sélectionner) :</p>
             <div class="menu-grid">
-                </div>
+            </div>
         </section>
 
         <!-- Inscription -->
         <section id="inscription">
             <h2>Confirmation</h2>
-            
+
             <div class="deadline-notice">
                 ⚠️ Date limite d'inscription : 7 février 2026
             </div>
@@ -122,7 +167,8 @@
 
                 <div class="form-group">
                     <label for="menu-choix">Choix du menu</label>
-                    <input type="text" id="menu-choix" readonly placeholder="Sélectionnez dans la section menu ci-dessus">
+                    <input type="text" id="menu-choix" readonly
+                        placeholder="Sélectionnez dans la section menu ci-dessus">
                 </div>
 
                 <div class="form-group">
@@ -146,23 +192,25 @@
                 Pour les nuitées, nous vous recommandons l'hôtel <b>Destinée</b>, idéalement situé. <br>
                 Veuillez contacter directement pour vos réservations.
             </p>
-            
+
             <div class="contact-grid">
                 <div class="contact-card">
                     <h4>Orange</h4>
                     <a href="tel:+237695754273" class="btn">📞 Appeler</a>
-                    <a href="https://wa.me/237695754273" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a href="https://wa.me/237695754273" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i>
+                        WhatsApp</a>
                 </div>
                 <div class="contact-card">
                     <h4>MTN</h4>
                     <a href="tel:+237670553791" class="btn">📞 Appeler</a>
-                    </div>
+                </div>
             </div>
 
             <h3 style="margin-top: 30px; margin-bottom: 15px;">Localisation de l'Hôtel</h3>
             <p><strong>Adresse approximative :</strong> Près de la Place des Fêtes de Mbouda</p>
             <div class="map-container hotel-map">
-                <iframe src="https://maps.google.com/maps?q=5.623489094161465,10.254354648434505&z=15&output=embed" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://maps.google.com/maps?q=5.623489094161465,10.254354648434505&z=15&output=embed"
+                    allowfullscreen="" loading="lazy"></iframe>
             </div>
             <p style="margin-top: 15px;">L'hôtel est à <b>21 minutes</b> de voiture du lieu de la cérémonie.</p>
 
@@ -173,7 +221,8 @@
             <h2>Localisation</h2>
             <p><strong>Lieu :</strong> Batcheutio, Village du Groupement Batcham (Bamboutos)</p>
             <div class="map-container">
-                <iframe src="https://maps.google.com/maps?q=5.559817,10.258736&z=15&output=embed" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="https://maps.google.com/maps?q=5.559817,10.258736&z=15&output=embed" allowfullscreen=""
+                    loading="lazy"></iframe>
             </div>
         </section>
 
@@ -231,12 +280,14 @@
                 <div class="contact-card">
                     <h4>TANE Rostant</h4>
                     <a href="tel:+237697183399" class="btn">📞 Appeler</a>
-                    <a href="https://wa.me/237697183399" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a href="https://wa.me/237697183399" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i>
+                        WhatsApp</a>
                 </div>
                 <div class="contact-card">
                     <h4>METCHOUANG Dalila</h4>
                     <a href="tel:+237677431013" class="btn">📞 Appeler</a>
-                    <a href="https://wa.me/237677431013" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                    <a href="https://wa.me/237677431013" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i>
+                        WhatsApp</a>
                 </div>
             </div>
         </section>
@@ -244,7 +295,7 @@
         <!-- Condoléances -->
         <section id="condoleances">
             <h2>Livre de Condoléances</h2>
-            
+
             <form id="condoleanceForm" onsubmit="addCondolence(event)">
                 <div class="form-group">
                     <label for="condoleance-nom">Votre nom</label>
@@ -260,7 +311,8 @@
             <div id="condoleancesList" style="margin-top: 30px;">
                 <div class="condolence">
                     <div class="condolence-author">Famille NKEMBE</div>
-                    <p>Nos pensées et prières accompagnent vos familles dans cette épreuve. Que leurs âmes reposent en paix.</p>
+                    <p>Nos pensées et prières accompagnent vos familles dans cette épreuve. Que leurs âmes reposent en
+                        paix.</p>
                 </div>
             </div>
         </section>
@@ -275,4 +327,5 @@
     <script src="textData.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
