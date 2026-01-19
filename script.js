@@ -5,7 +5,7 @@ let donations = [];
 // Variable pour stocker la dernière inscription de l'utilisateur sur ce navigateur
 let lastUserRegistration = null;
 // Variable globale pour l'URL de votre Apps Script (PLACEHOLDER)
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbz3whgdTTkipblEW8tndSCBzSTdWdzTKGPMNxG3ovl_w_Sw7EpnivgCsqxW1SQgydhr/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzCpy5Gl82nOx2voQV_GFX7pJIKo6AimL8jdZj5MyG8IHFmz9gh4D1N2PpY69TqqWEH/exec';
 let carouselInterval;
 
 function sendDataToGoogleSheet(data, actionType) {
@@ -21,7 +21,7 @@ function sendDataToGoogleSheet(data, actionType) {
         message: data.message,
         timestamp: data.date
     };
-    
+
     return fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -30,21 +30,122 @@ function sendDataToGoogleSheet(data, actionType) {
         },
         body: new URLSearchParams(sheetData),
     })
-    .then(() => true)
-    .catch(error => {
-        console.error('Erreur:', error);
-        throw new Error('Échec de la communication avec le serveur.');
-    });
+        .then(() => true)
+        .catch(error => {
+            console.error('Erreur:', error);
+            throw new Error('Échec de la communication avec le serveur.');
+        });
 }
 
-// Charger les données au démarrage
-window.addEventListener('DOMContentLoaded', function() {
-    loadData();
-    loadCarouselInfos();
-    loadCondolencesFromSheet(); // Charger depuis Sheets uniquement
-    checkExistingRegistration();
-    loadMenuFromSheet();
+// Détection de l'URL pour activer le mode check-in
+window.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('checkin') === 'true') {
+        initCheckin();
+    } else {
+        // Chargement normal
+        loadData();
+        loadCarouselInfos();
+        loadCondolencesFromSheet();
+        checkExistingRegistration();
+        loadMenuFromSheet();
+    }
 });
+
+function initCheckin() {
+    // Cacher toutes les sections sauf le check-in
+    document.querySelectorAll('section').forEach(section => {
+        if (section.id !== 'checkin') {
+            section.style.display = 'none';
+        }
+    });
+
+    document.getElementById('checkin').style.display = 'block';
+
+    // Vérifier si l'utilisateur a déjà une inscription
+    if (lastUserRegistration && lastUserRegistration.nom && lastUserRegistration.telephone) {
+        // Afficher le check-in automatique
+        document.getElementById('checkin-nom').textContent = lastUserRegistration.nom;
+        document.getElementById('checkin-auto').style.display = 'block';
+        document.getElementById('checkin-form').style.display = 'none';
+    } else {
+        // Afficher le formulaire
+        showCheckinForm();
+    }
+}
+
+function showCheckinForm() {
+    document.getElementById('checkin-auto').style.display = 'none';
+    document.getElementById('checkin-form').style.display = 'block';
+
+    // Pré-remplir si des données existent
+    if (lastUserRegistration) {
+        document.getElementById('checkin-nom-input').value = lastUserRegistration.nom || '';
+        document.getElementById('checkin-telephone-input').value = lastUserRegistration.telephone || '';
+        document.getElementById('checkin-personnes').value = lastUserRegistration.nbPersonnes || 1;
+    }
+}
+
+function confirmCheckin() {
+    const checkinData = {
+        nom: lastUserRegistration.nom,
+        telephone: lastUserRegistration.telephone,
+        nbPersonnes: lastUserRegistration.nbPersonnes || 1,
+        heureArrivee: new Date().toISOString()
+    };
+
+    sendCheckinToSheet(checkinData);
+}
+
+function handleCheckinSubmit(event) {
+    event.preventDefault();
+
+    const checkinData = {
+        nom: document.getElementById('checkin-nom-input').value,
+        telephone: document.getElementById('checkin-telephone-input').value,
+        nbPersonnes: document.getElementById('checkin-personnes').value,
+        heureArrivee: new Date().toISOString()
+    };
+
+    sendCheckinToSheet(checkinData);
+}
+
+function sendCheckinToSheet(data) {
+    const formData = new URLSearchParams({
+        action_type: 'checkin',
+        nom: data.nom,
+        telephone: data.telephone,
+        nbPersonnes: data.nbPersonnes,
+        heureArrivee: data.heureArrivee
+    });
+
+    fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+    })
+        .then(() => {
+            const confirmationMsg = document.getElementById('checkinConfirmationMsg');
+            confirmationMsg.style.display = 'block';
+
+            // Cacher les formulaires
+            document.getElementById('checkin-auto').style.display = 'none';
+            document.getElementById('checkin-form').style.display = 'none';
+
+            // Rediriger vers la page principale après 3 secondes
+            setTimeout(() => {
+                window.location.href = window.location.origin + window.location.pathname;
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de l\'enregistrement de votre arrivée');
+        });
+}
 
 function loadData() {
     const savedRegistrations = localStorage.getItem('memorial_registrations');
@@ -59,7 +160,7 @@ function loadData() {
 function saveData() {
     localStorage.setItem('memorial_registrations', JSON.stringify(registrations));
     localStorage.setItem('memorial_donations', JSON.stringify(donations));
-    
+
     if (lastUserRegistration) {
         localStorage.setItem('last_user_registration', JSON.stringify(lastUserRegistration));
     } else {
@@ -72,23 +173,23 @@ async function loadCarouselInfos() {
         if (typeof anecdotes === 'undefined') {
             throw new Error('Anecdotes non chargées');
         }
-        
+
         // Calculer le compte à rebours
         const eventDate = new Date('2026-02-11T00:00:00');
         const now = new Date();
         const diff = eventDate - now;
-        
+
         const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
         const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        
+
         const countdownMessage = `⏰ Il reste ${jours} jours et ${heures} heures avant le début de l'événement`;
-        
+
         // Mélanger les anecdotes
         const shuffledAnecdotes = [...anecdotes].sort(() => Math.random() - 0.5);
-        
+
         // Afficher le countdown en premier
         displayCarouselItem(countdownMessage, 0);
-        
+
         // Démarrer le carousel avec les anecdotes
         let currentIndex = 0;
         carouselInterval = setInterval(() => {
@@ -97,7 +198,7 @@ async function loadCarouselInfos() {
             const message = `${anecdote.auteur} : "${anecdote.anecdote}"`;
             displayCarouselItem(message, currentIndex + 1);
         }, 10000); // 30 secondes
-        
+
     } catch (error) {
         console.error('Erreur chargement carousel:', error);
         displayCarouselItem('Informations bientôt disponibles', 0);
@@ -122,7 +223,7 @@ function checkExistingRegistration() {
         if (formTitle) {
             formTitle.innerHTML = 'Modifier vos Informations';
         }
-        
+
         // Pré-remplir le formulaire
         document.getElementById('nom').value = lastUserRegistration.nom || '';
         document.getElementById('telephone').value = lastUserRegistration.telephone || '';
@@ -133,7 +234,7 @@ function checkExistingRegistration() {
 
         // Pré-sélectionner le menu (plus complexe)
         const selectedMenu = lastUserRegistration.menuChoix ? lastUserRegistration.menuChoix.split(', ') : [];
-        
+
         document.querySelectorAll('.menu-item').forEach(itemElement => {
             const item = itemElement.dataset.item;
             if (selectedMenu.includes(item)) {
@@ -142,7 +243,7 @@ function checkExistingRegistration() {
                 itemElement.classList.remove('selected');
             }
         });
-        
+
         // Mettre à jour les éléments de menu sélectionnés globalement
         selectedMenuItems = selectedMenu;
 
@@ -151,7 +252,7 @@ function checkExistingRegistration() {
             submitButton.textContent = 'Modifier vos Informations';
             submitButton.classList.add('btn-update'); // Vous pouvez ajouter un style CSS spécifique
         }
-        
+
     } else {
         // Réinitialiser si aucune inscription trouvée
         if (formTitle) {
@@ -167,7 +268,7 @@ function checkExistingRegistration() {
 function toggleMenuItem(element) {
     element.classList.toggle('selected');
     const item = element.dataset.item;
-    
+
     if (element.classList.contains('selected')) {
         if (!selectedMenuItems.includes(item)) {
             selectedMenuItems.push(item);
@@ -175,7 +276,7 @@ function toggleMenuItem(element) {
     } else {
         selectedMenuItems = selectedMenuItems.filter(i => i !== item);
     }
-    
+
     document.getElementById('menu-choix').value = selectedMenuItems.join(', ');
 }
 
@@ -199,17 +300,17 @@ function handleSubmit(event) {
 
     // Déterminer s'il s'agit d'une mise à jour (en cherchant d'abord dans la liste globale, puis dans lastUserRegistration)
     let existingReg = registrations.find(r => r.nom === nom && r.telephone === telephone);
-    
+
     // Si l'utilisateur n'a pas changé son Nom/Téléphone, on utilise l'ID de la dernière session
     if (!existingReg && lastUserRegistration && lastUserRegistration.nom === nom && lastUserRegistration.telephone === telephone) {
         existingReg = lastUserRegistration;
     }
-    
+
     const actionType = existingReg ? 'Mise à jour' : 'Nouvelle inscription';
 
     const registration = {
         // Conserver l'ID s'il existe, sinon en créer un nouveau
-        id: existingReg ? existingReg.id : Date.now(), 
+        id: existingReg ? existingReg.id : Date.now(),
         nom,
         telephone,
         nbPersonnes,
@@ -218,7 +319,7 @@ function handleSubmit(event) {
         menuChoix,
         message,
         date: new Date().toISOString(),
-        action: actionType 
+        action: actionType
     };
 
     // 1. Mettre à jour la liste globale des inscriptions
@@ -227,17 +328,17 @@ function handleSubmit(event) {
     } else {
         registrations.push(registration);
     }
-    
+
     // 2. Mettre à jour l'inscription de l'utilisateur pour le pré-remplissage local
     lastUserRegistration = registration;
-    
+
     // 3. Sauvegarder les deux dans le localStorage
-    saveData(); 
+    saveData();
 
     // 4. Envoi des données au backend (Google Sheets)
     sendDataToGoogleSheet(registration, actionType)
         .then(() => {
-            const msgText = actionType === 'Mise à jour' 
+            const msgText = actionType === 'Mise à jour'
                 ? `✓ Votre inscription a été mise à jour avec succès !`
                 : `✓ Votre inscription a été enregistrée avec succès !`;
 
@@ -246,7 +347,7 @@ function handleSubmit(event) {
             confirmationMsg.style.display = 'block';
 
             // Mise à jour immédiate de l'interface après une soumission réussie
-            checkExistingRegistration(); 
+            checkExistingRegistration();
 
             // Réinitialiser le message après 5 secondes
             setTimeout(() => {
@@ -260,10 +361,10 @@ function handleSubmit(event) {
 
 function addCondolence(event) {
     event.preventDefault();
-    
+
     const nom = document.getElementById('condoleance-nom').value;
     const message = document.getElementById('condoleance-message').value;
-    
+
     if (!nom || !message) {
         alert('Veuillez remplir tous les champs');
         return;
@@ -284,16 +385,16 @@ function addCondolence(event) {
         },
         body: formData
     })
-    .then(() => {
-        alert('✓ Votre condoléance a été enregistrée');
-        document.getElementById('condoleanceForm').reset();
-        // Recharger les condoléances depuis Sheets
-        loadCondolencesFromSheet();
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur lors de l\'envoi de la condoléance');
-    });
+        .then(() => {
+            alert('✓ Votre condoléance a été enregistrée');
+            document.getElementById('condoleanceForm').reset();
+            // Recharger les condoléances depuis Sheets
+            loadCondolencesFromSheet();
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de l\'envoi de la condoléance');
+        });
 }
 
 function loadCondolencesFromSheet() {
@@ -315,12 +416,12 @@ function loadCondolencesFromSheet() {
 function displayCondolencesFromData(condolencesData) {
     const container = document.getElementById('condoleancesList');
     container.innerHTML = '';
-    
+
     if (condolencesData.length === 0) {
         displayDefaultCondolence();
         return;
     }
-    
+
     condolencesData.forEach(condolence => {
         const condolenceDiv = document.createElement('div');
         condolenceDiv.className = 'condolence';
@@ -352,14 +453,14 @@ function handleDonation(event) {
     // NOTE : L'opérateur n'est pas utilisé dans le formulaire index.html, 
     // donc nous l'omettons ici. Si vous l'ajoutez, vous devrez le récupérer.
     const message = document.getElementById('don-message').value;
-    
+
     // Le formulaire index.html ne contient pas d'input pour l'opérateur,
     // mais si on se fie aux champs requis, on s'en tient à Nom, Tél, Montant.
     if (!nom || !telephone || !montant) {
         alert('Veuillez remplir tous les champs obligatoires');
         return;
     }
-    
+
     // Logique d'envoi des données au backend (Google Sheets)
     const formData = new URLSearchParams({
         action_type: 'donation', // C'est la clé que l'Apps Script recherche
@@ -377,17 +478,17 @@ function handleDonation(event) {
         },
         body: formData
     })
-    .then(() => {
-        // Afficher un message de confirmation
-        alert('✓ Votre don a été enregistré dans le registre (N\'oubliez pas de l\'effectuer via Mobile Money)');
-        
-        // Réinitialiser le formulaire
-        document.getElementById('donForm').reset();
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-        alert('Erreur lors de l\'envoi du don : ' + error.message);
-    });
+        .then(() => {
+            // Afficher un message de confirmation
+            alert('✓ Votre don a été enregistré dans le registre (N\'oubliez pas de l\'effectuer via Mobile Money)');
+
+            // Réinitialiser le formulaire
+            document.getElementById('donForm').reset();
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Erreur lors de l\'envoi du don : ' + error.message);
+        });
 }
 
 /**
@@ -430,8 +531,8 @@ function displayMenu(menuData) {
 
     menuData.forEach(item => {
         // Crée un identifiant unique basé sur le titre (sans espaces ni caractères spéciaux)
-        const dataItem = item.titre.toLowerCase().replace(/[^a-z0-9]+/g, '-'); 
-        
+        const dataItem = item.titre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
         const menuItemDiv = document.createElement('div');
         // NOTE: On utilise dataItem comme clé unique.
         menuItemDiv.className = 'menu-item';
@@ -443,7 +544,7 @@ function displayMenu(menuData) {
         `;
         menuGrid.appendChild(menuItemDiv);
     });
-    
+
     // Ré-appliquer la sélection si l'utilisateur avait une inscription existante
     checkExistingRegistration();
 }
@@ -454,7 +555,7 @@ function displayMenu(menuData) {
 function displayDefaultMenu() {
     const menuGrid = document.querySelector('#menu .menu-grid');
     if (!menuGrid) return;
-    
+
     // Contenu par défaut (similaire à index.html)
     menuGrid.innerHTML = `
         <div class="menu-item" onclick="toggleMenuItem(this)" data-item="plat-traditionnel">
@@ -487,13 +588,13 @@ function downloadProgramme() {
 
     // 1. Créer un élément <a> (lien)
     const a = document.createElement('a');
-    
+
     // 2. Définir le chemin vers le fichier PDF
-    a.href = PDF_FILE_PATH; 
-    
+    a.href = PDF_FILE_PATH;
+
     // 3. Définir le nom sous lequel le fichier sera téléchargé
     a.download = DOWNLOAD_NAME;
-    
+
     // 4. Ajouter le lien au corps du document, cliquer dessus, puis le supprimer
     document.body.appendChild(a);
     a.click();
