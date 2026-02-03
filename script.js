@@ -603,6 +603,20 @@ function downloadProgramme() {
     alert(`Le document "${DOWNLOAD_NAME}" a été lancé en téléchargement.`);
 }
 
+function downloadProgrammeDetaille() {
+    const PDF_FILE_PATH = 'programme/Programme.pdf';
+    const DOWNLOAD_NAME = 'Programme Detaille - Hommages Artistiques.pdf';
+
+    const a = document.createElement('a');
+    a.href = PDF_FILE_PATH;
+    a.download = DOWNLOAD_NAME;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    alert(`Le document "${DOWNLOAD_NAME}" a été lancé en téléchargement.`);
+}
+
 // Navigation douce
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
